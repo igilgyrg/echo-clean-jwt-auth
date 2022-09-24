@@ -1,0 +1,31 @@
+version: '3.1'
+
+volumes:
+  todo: { }
+
+services:
+  task_mongo:
+    image: mongo:latest
+    restart: always
+    container_name: todo_mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=12345
+    volumes:
+      - ../migrations/init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - todo:/data/db
+
+  task_mongo-express:
+    image: mongo-express
+    container_name: todo_mongo_express
+    restart: always
+    ports:
+      - "5000:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=task_mongo
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=12345
+    depends_on:
+      - task_mongo
