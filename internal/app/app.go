@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/igilgyrg/todo-echo/internal/config"
+	"github.com/igilgyrg/todo-echo/pkg/logging"
 	mongoclient "github.com/igilgyrg/todo-echo/pkg/repository/mongo"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -32,7 +34,7 @@ func NewApp() *App {
 
 	mongoClient, err := mongoclient.Init(mongoConfig)
 	if err != nil {
-		// TODO logger
+		log.Fatal("mongo database have not inited")
 	}
 
 	return &App{
@@ -52,7 +54,7 @@ func (a *App) Start() error {
 
 	go func() {
 		if err := a.echo.StartServer(httpServer); err != nil {
-			// TODO logger
+			log.Fatalf("error start server, %w", err)
 		}
 	}()
 
@@ -65,7 +67,7 @@ func (a *App) Start() error {
 
 	<-quit
 
-	ctx, shutdown := context.WithTimeout(context.Background(), ctxTimeout*time.Second)
+	ctx, shutdown := context.WithTimeout(logging.ContextWithLogger(context.Background()), ctxTimeout*time.Second)
 	defer shutdown()
 
 	return a.echo.Shutdown(ctx)

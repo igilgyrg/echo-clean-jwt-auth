@@ -10,6 +10,7 @@ import (
 	"github.com/igilgyrg/todo-echo/internal/domain"
 	internalerror "github.com/igilgyrg/todo-echo/internal/error"
 	"github.com/igilgyrg/todo-echo/internal/user"
+	"github.com/igilgyrg/todo-echo/pkg/logging"
 	"time"
 )
 
@@ -81,6 +82,7 @@ func (a AuthUC) Refresh(ctx context.Context, refreshToken string) (*domain.Token
 	if ok {
 		accessToken, err := generateAccessToken(domain.ID(userID), a.cfg.AccessTokenSignature)
 		if err != nil {
+			logging.Logger(ctx).Warnf("error of generate access token")
 			return nil, internalerror.NewAccessTokenInvalid(err)
 		}
 

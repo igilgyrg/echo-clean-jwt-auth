@@ -7,6 +7,7 @@ import (
 
 func main() {
 	taskApplication := app.NewApp()
+
 	err := taskApplication.Start()
 	if err != nil {
 		log.Fatal("error of starting application")
